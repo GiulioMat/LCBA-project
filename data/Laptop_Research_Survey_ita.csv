@@ -1,0 +1,35 @@
+Num;Age;Gender;Education;Work?;Laptop 1;Laptop 2;Laptop 3;Laptop 4;Laptop 5;Laptop 6;Laptop 7;Laptop 8;Laptop 9
+1;20-23;male;Master of Science;No;8;3;8;8;8;8;6;5;4
+2;20-23;male;Master of Science;No;7;4;5;5;6;8;6;6;5
+3;20-23;female;Master of Science;Yes, part-time;4;3;8;7;5;7;8;7;6
+4;20-23;male;Master of Science;Yes, part-time;6;3;8;9;7;7;8;5;4
+5;24-26;male;Master of Science;Yes, part-time;7;4;8;7;8;7;8;6;5
+6;20-23;female;Master of Science;No;6;5;7;7;6;7;7;6;6
+7;>30;male;Not a student;Yes, full-time;7;4;7;6;7;8;7;7;6
+8;>30;female;Not a student;Yes, full-time;5;4;7;7;6;7;7;6;4
+9;20-23;male;Master of Science;No;7;4;6;7;8;8;8;7;5
+10;24-26;male;Master of Science;Yes, part-time;7;7;7;8;8;8;6;5;5
+11;20-23;male;Bachelor's degree;No;7;5;8;6;7;8;8;6;7
+12;20-23;male;Master of Science;No;8;7;8;7;7;9;8;6;6
+13;20-23;male;Master of Science;Yes, part-time;7;5;7;8;7;9;7;5;6
+14;20-23;male;Master of Science;No;7;5;7;7;7;7;6;5;6
+15;24-26;male;Not a student;Yes, full-time;6;5;8;7;6;7;8;5;6
+16;24-26;male;Not a student;Yes, full-time;7;6;8;8;8;8;8;6;5
+17;20-23;female;Master of Science;No;6;6;7;7;7;8;8;7;6
+18;20-23;male;Master of Science;No;7;6;8;7;8;8;7;4;4
+19;20-23;female;Bachelor's degree;No;6;5;8;8;5;8;7;7;6
+20;24-26;male;Not a student;Yes, full-time;6;5;7;7;7;8;6;5;6
+21;20-23;male;Master of Science;No;5;4;6;7;6;9;8;7;5
+22;20-23;male;Master of Science;Yes, part-time;8;5;6;6;7;8;7;5;5
+23;20-23;female;Master of Science;No;5;5;8;8;5;7;7;6;7
+24;20-23;male;Bachelor's degree;No;6;5;7;7;7;8;9;5;4
+25;20-23;male;Not a student;Yes, full-time;7;4;7;7;8;8;6;5;4
+26;20-23;female;Master of Science;No;5;4;7;8;7;7;8;6;6
+27;24-26;male;Master of Science;No;6;4;6;7;7;8;5;4;5
+28;20-23;male;Master of Science;No;6;5;6;6;7;7;6;5;5
+29;20-23;male;Master of Science;No;6;4;7;8;8;8;8;4;4
+30;20-23;male;Master of Science;Yes, part-time;5;4;7;7;5;7;7;5;4
+31;20-23;male;Bachelor's degree;No;7;5;8;7;8;8;8;6;6
+32;20-23;female;Master of Science;Yes, part-time;5;4;8;8;6;8;8;6;6
+33;24-26;male;Master of Science;Yes, part-time;7;6;7;7;8;8;7;6;5
+34;24-26;male;Not a student;Yes, full-time;7;5;7;8;6;8;8;7;6
