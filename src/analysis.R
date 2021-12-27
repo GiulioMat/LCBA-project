@@ -1,6 +1,7 @@
 library(lme4)
+library(ggpubr)
 library(sjPlot)
-library(ggplot2)
+library(lattice)
 
 # load data
 df <- read.csv("Laptop_Research_Survey.csv")
@@ -38,13 +39,15 @@ plot_pw <- function(model){
   }
   row.names(part_worths) <- NULL
   
-  ggdotchart(pw, x="level", y="pw", color="type", rotate = TRUE, 
+  ggdotchart(part_worths, x="level", y="pw", color="type", rotate = TRUE, 
              add = "segments", group = "type", sorting = "ascending", dot.size=3, size=1) + 
     geom_hline(yintercept = 0, color = "lightgray") +
     labs(title="Spine chart", x ="Levels", y = "Standardized Part-Worths", color = "Attributes") +
     theme(plot.title = element_text(hjust = 0.5))
   
 }
+
+plot_pw(lin_reg)
 
 # fit random intercept multilevel linear model
 multilin_RI <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + (1 | resp_id), data=df)
