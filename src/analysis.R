@@ -53,7 +53,7 @@ plot_pw(lin_reg)
 multilin_RI <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + (1 | resp_id), data=df)
 summary(multilin_RI) # a lot of variance in how respondent use rating scale
 
-plot_model(multilin_RI, vline.color = "red", show.values = TRUE)
+# plot_model(multilin_RI, vline.color = "red", show.values = TRUE)
 
 multilin_RI_2 <- lmer(rating ~ operating_system + RAM + screen_size + battery + price + (1 | resp_id), data=df)
 anova(multilin_RI, multilin_RI_2) # the full model is better than the restricted one
@@ -77,7 +77,8 @@ R2_1 <- 1-((3.375+1.994)/(4.201+1.902)) # 0.12 (?)
 
 # fit random slope multilevel linear model
 mlmRS <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + 
-                (operating_system + storage + battery  | resp_id), data=df)
+                (operating_system + RAM + storage + screen_size + battery + price | resp_id), 
+              data=df, control = lmerControl(check.nobs.vs.nRE = "ignore"))
 summary(mlmRS)
 dotplot(ranef(mlmRS), cex=0.4)
 
