@@ -14,9 +14,11 @@ for(i in c('RAM', 'storage', 'screen_size', 'battery', 'price')){
 str(df)
 summary(df)
 
+
+
 # fit linear regression model
 lin_reg <- lm(rating ~ operating_system + RAM + storage + screen_size + battery + price, data=df)
-summary(lin_reg) # prefer everything big and MacOS, don't like 1500 as price
+summary(lin_reg)
 
 # function to plot part-worths
 plot_pw <- function(model){
@@ -39,6 +41,15 @@ plot_pw <- function(model){
   }
   row.names(part_worths) <- NULL
   
+  # calculate importance of attributes
+  importance <- aggregate(abs(part_worths$pw), by=list(attributes=part_worths$type), FUN=sum)
+  importance$x <- round((importance$x/sum(importance$x))*100, 3)
+  importance <- importance[order(importance$x, decreasing = TRUE),]
+  importance$x <- paste(importance$x, '%')
+  names(importance)[2] <- "importance"
+  print(importance)
+  
+  # plot standardized part-worths
   ggdotchart(part_worths, x="level", y="pw", color="type", rotate = TRUE, 
              add = "segments", group = "type", sorting = "ascending", dot.size=3, size=1) + 
     geom_hline(yintercept = 0, color = "lightgray") +
@@ -47,19 +58,27 @@ plot_pw <- function(model){
   
 }
 
-plot_pw(lin_reg)
+plot_pw(lin_reg) # generally prefer everything big and MacOS, don't like 1500 as price
+
+
 
 # fit random intercept multilevel linear model
 multilin_RI <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + (1 | resp_id), data=df)
 summary(multilin_RI) # a lot of variance in how respondent use rating scale
+tab_model(multilin_RI)
+
+multilin_RI_2 <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + (1 | nationality/resp_id), data=df)
+summary(multilin_RI_2)
+tab_model(multilin_RI_2)
+
+AIC(lin_reg)
+AIC(multilin_RI) 
+AIC(multilin_RI_2) # a bit better model with also nationality
 
 # plot_model(multilin_RI, vline.color = "red", show.values = TRUE)
 
-multilin_RI_2 <- lmer(rating ~ operating_system + RAM + screen_size + battery + price + (1 | resp_id), data=df)
-anova(multilin_RI, multilin_RI_2) # the full model is better than the restricted one
-
 # visualize the distibution of the differing respondent intercepts
-interc <- unlist(coef(multilin_RI)$resp_id[1]) # get intercept values
+interc <- unlist(coef(multilin_RI_2)$resp_id[1]) # get intercept values
 par(mfrow=c(1,2))
 plot(density(interc), main="Kernel density") # kernel density
 grid()
@@ -68,20 +87,31 @@ grid()
 par(mfrow=c(1,1))
 
 # compute the intraclass correlation coefficient
-ICC <- (1.994/(1.994+3.375))*100 # 37% of variance is explained by different use of rating scale
+ICC <- (1.994/(1.994+3.375))*100 # 37% of variance explained by model with resp_id
+ICC_2 <- ((1.571+1.57)/(1.571+1.571+3.375))*100 # 48% of variance explained by model with nationality/resp_id
 
-# compute the Level-1 R-squared
-NullModel <- lmer(rating ~ 1 + (1 | resp_id), data=df)
-summary(NullModel)
-R2_1 <- 1-((3.375+1.994)/(4.201+1.902)) # 0.12 (?)
+
 
 # fit random slope multilevel linear model
 mlmRS <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + 
                 (operating_system + RAM + storage + screen_size + battery + price | resp_id), 
               data=df, control = lmerControl(check.nobs.vs.nRE = "ignore"))
 summary(mlmRS)
-dotplot(ranef(mlmRS), cex=0.4)
+tab_model(mlmRS) # high variance in operating_system, RAM, battery, price
 
+mlmRS_2 <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + 
+                (operating_system + RAM + storage + screen_size + battery + price | nationality/resp_id), 
+              data=df, control = lmerControl(check.nobs.vs.nRE = "ignore"))
+summary(mlmRS_2)
+tab_model(mlmRS_2)
+
+AIC(mlmRS) # better model with just resp_id
+AIC(mlmRS_2)
+
+# plot random effects
+dotplot(ranef(mlmRS), cex=0.4) # heterogeneity in operating_system, RAM, battery, price
+
+# visualizing operating system 
 windows <- coef(mlmRS)$resp_id$operating_systemWindows
 macos <- coef(mlmRS)$resp_id$operating_systemMacOS
 par(mfrow=c(1,2))
@@ -91,5 +121,40 @@ grid()
 hist(macos, xlim=c(-4,4), ylim=c(0,50), main="MacOS vs Linux", ylab="Respondents frequency", 
      xlab="Difference in rating")
 grid()
+
+# visualizing RAM
+RAM8 <- coef(mlmRS)$resp_id$RAM8
+RAM16 <- coef(mlmRS)$resp_id$RAM16
+par(mfrow=c(1,2))
+hist(RAM8, xlim=c(-4,4), ylim=c(0,50), main="RAM 8GB vs RAM 4GB", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+hist(RAM16, xlim=c(-4,4), ylim=c(0,50), main="RAM 16GB vs RAM 4GB", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+
+# visualizing battery 
+battery8 <- coef(mlmRS)$resp_id$battery8
+battery12 <- coef(mlmRS)$resp_id$battery12
+par(mfrow=c(1,2))
+hist(battery8, xlim=c(-4,4), ylim=c(0,50), main="Battery 8h vs Battery 4h", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+hist(battery12, xlim=c(-4,4), ylim=c(0,50), main="Battery 12h vs Battery 4h", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+
+# visualizing price 
+price1000 <- coef(mlmRS)$resp_id$price1000
+price1500 <- coef(mlmRS)$resp_id$price1500
+par(mfrow=c(1,2))
+hist(price1000, xlim=c(-4,4), ylim=c(0,50), main="1000$ vs 500$", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+hist(price1500, xlim=c(-4,4), ylim=c(0,50), main="1500$ vs 500$", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+
 par(mfrow=c(1,1))
+
 

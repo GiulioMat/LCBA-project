@@ -1,4 +1,4 @@
-Num;Age;Gender;Education;Work?;Q1;Q2;Q3;Q4;Q5;Q6;Q7;Q8;Q9
+Num;Age;Gender;Education;Work;Q1;Q2;Q3;Q4;Q5;Q6;Q7;Q8;Q9
 1;24-26;female;Master of Science;No;1;1;1;1;1;6;6;1;1
 2;24-26;female;Master of Science;Yes, full-time;1;4;1;5;1;6;8;1;3
 3;24-26;male;Master of Science;Yes, full-time;7;1;1;8;1;5;7;1;7
@@ -79,8 +79,8 @@ Num;Age;Gender;Education;Work?;Q1;Q2;Q3;Q4;Q5;Q6;Q7;Q8;Q9
 78;24-26;male;Master of Science;Yes, part-time;4;10;6;1;7;5;7;8;6
 79;20-23;female;Bachelor's degree;No;2;7;8;5;3;5;5;7;10
 80;24-26;female;Master of Science;No;5;5;5;5;5;5;5;5;5
-81;"&lt;18";female;Bachelor's degree;Yes, full-time;4;8;6;8;8;9;10;10;10
-82;"&lt;18";male;Bachelor's degree;No;6;3;4;8;4;2;2;4;6
+81;<18;female;Bachelor's degree;Yes, full-time;4;8;6;8;8;9;10;10;10
+82;<18;male;Bachelor's degree;No;6;3;4;8;4;2;2;4;6
 83;20-23;male;Bachelor's degree;No;6;3;1;1;1;1;6;1;1
 84;20-23;female;Bachelor's degree;No;7;1;8;1;1;1;7;1;1
 85;18-20;male;prefer not to say;Yes, full-time;7;7;7;8;9;8;9;10;8
@@ -145,7 +145,7 @@ Num;Age;Gender;Education;Work?;Q1;Q2;Q3;Q4;Q5;Q6;Q7;Q8;Q9
 144;20-23;female;Master of Science;No;4;1;1;5;1;6;8;1;2
 145;20-23;female;Bachelor's degree;No;4;4;4;4;4;4;8;8;5
 146;18-20;female;Bachelor's degree;No;5;3;6;5;4;4;4;4;5
-147;"&lt;18";female;Master of Science;No;6;7;6;7;6;7;6;7;5
+147;<18;female;Master of Science;No;6;7;6;7;6;7;6;7;5
 148;18-20;female;Bachelor's degree;No;7;1;7;3;1;1;4;7;7
 149;20-23;female;Bachelor's degree;No;5;3;4;6;5;6;7;6;7
 150;20-23;female;Bachelor's degree;No;10;10;10;10;10;10;10;10;10
