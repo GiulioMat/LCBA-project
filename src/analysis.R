@@ -2,6 +2,7 @@ library(lme4)
 library(ggpubr)
 library(sjPlot)
 library(lattice)
+library(gridExtra)
 
 # load data
 df <- read.csv("Laptop_Research_Survey.csv")
@@ -16,28 +17,36 @@ summary(df)
 
 
 
+# set options to obtain sum contrast
+backup_options <- options()
+options(contrasts=c("contr.sum","contr.poly"))
+
 # fit linear regression model
 lin_reg <- lm(rating ~ operating_system + RAM + storage + screen_size + battery + price, data=df)
 summary(lin_reg)
 
 # function to plot part-worths
 plot_pw <- function(model){
-  part_worths <- data.frame(type=character(), level=character(), pw=double())
+  part_worths <- data.frame(type=character(), level=character(), pw=double(), std_pw=double())
   
+  # calculate part-worths
   index = 1
   for(i in names(model$xlevels)){
     index <- index+1
     x1 <- model$coefficients[index]
     index <- index+1
     x2 <- model$coefficients[index]
-    mean <- mean(c(0, x1, x2))
-    sd <- sd(c(0, x1, x2))
-    x0 <- (0-mean)/sd
-    x1 <- (x1-mean)/sd
-    x2 <- (x2-mean)/sd
-    part_worths <- rbind(data.frame(type=i, level=paste0(i,"_",model$xlevels[[i]][1]), pw=x0), part_worths)
-    part_worths <- rbind(data.frame(type=i, level=paste0(i,"_",model$xlevels[[i]][2]), pw=x1), part_worths)
-    part_worths <- rbind(data.frame(type=i, level=paste0(i,"_",model$xlevels[[i]][3]), pw=x2), part_worths)
+    x3 <- -sum(x1, x2)
+    
+    mean <- mean(c(x1, x2, x3))
+    sd <- sd(c(x1, x2, x3))
+    std_x1 <- (x1-mean)/sd
+    std_x2 <- (x2-mean)/sd
+    std_x3 <- (x3-mean)/sd
+    
+    part_worths <- rbind(data.frame(type=i, level=paste0(i,"_",model$xlevels[[i]][1]), pw=x1, std_pw=std_x1), part_worths)
+    part_worths <- rbind(data.frame(type=i, level=paste0(i,"_",model$xlevels[[i]][2]), pw=x2, std_pw=std_x2), part_worths)
+    part_worths <- rbind(data.frame(type=i, level=paste0(i,"_",model$xlevels[[i]][3]), pw=x3, std_pw=std_x3), part_worths)
   }
   row.names(part_worths) <- NULL
   
@@ -47,20 +56,22 @@ plot_pw <- function(model){
   importance <- importance[order(importance$x, decreasing = TRUE),]
   importance$x <- paste(importance$x, '%')
   names(importance)[2] <- "importance"
-  print(importance)
   
-  # plot standardized part-worths
-  ggdotchart(part_worths, x="level", y="pw", color="type", rotate = TRUE, 
-             add = "segments", group = "type", sorting = "ascending", dot.size=3, size=1) + 
+  # plot standardized part-worths and importances
+  plot <- ggdotchart(part_worths, x="level", y="std_pw", color="type", rotate = TRUE, 
+                     add = "segments", group = "type", sorting = "ascending", dot.size=3, size=1) + 
     geom_hline(yintercept = 0, color = "lightgray") +
     labs(title="Spine chart", x ="Levels", y = "Standardized Part-Worths", color = "Attributes") +
     theme(plot.title = element_text(hjust = 0.5))
   
+  grid.arrange(tableGrob(importance,rows=NULL, theme = ttheme_default(base_size = 20)), plot, ncol=2)
 }
 
 plot_pw(lin_reg) # generally prefer everything big and MacOS, don't like 1500 as price
 
 
+# set options back to normal
+options(backup_options)
 
 # fit random intercept multilevel linear model
 multilin_RI <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + (1 | resp_id), data=df)
