@@ -59,7 +59,7 @@ df$full_time <- ifelse((df$Work == "Yes, full-time"), 1, 0)
 
 
 # perform clustering
-data_for_clustering <- df[, 6:ncol(df)]
+data_for_clustering <- df[, 5:ncol(df)]
 
 min_clusters <- 2
 max_clusters <- 20
@@ -85,8 +85,6 @@ five_cluster_solution <- pam(data_for_clustering, k = 5,
 plot(five_cluster_solution)
 
 df$cluster <- five_cluster_solution$clustering
-significant_clusters <- c(1,2,4)
-df <- df[df$cluster == significant_clusters,]
 df$cluster <- factor(df$cluster, labels=c("A", "B", "C", "D", "E"))
 
 # look at demographics across the clusters/segments
@@ -96,7 +94,7 @@ with(df, table(cluster, Age))
 
 with(df, table(cluster, Education))
 
-with(df, table(cluster, Work)) 
+with(df, table(cluster, Work))
 
 
 
