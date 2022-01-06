@@ -4,60 +4,9 @@ library(sjPlot)
 library(lattice)
 source("spine_chart_utility.R")
 
-###################################
-# step1. try to explore the       #   
-# customers' preferences          #
-# on different countries' markets #
-###################################
-
-### Italian market
-# load Italian data
-df_it <- read.csv("Laptop_Research_Survey_ita.csv")
-df_it <- data.frame(df_it)
-head(df_it)
-
-# convert variables as qualitative
-for (i in c('operating_system',"RAM","price","storage","screen_size","battery")){
-  df_it[[i]] <- as.factor(df_it[[i]])
-}
-
-# fit linear regression model on one Italian customer
-set.seed(15)
-c <- unique(df_it$resp_id)
-id <- sample(x=c, size = 1)
-it_ind <- df_it[df_it$resp_id==id,]
-lin_reg_it_ind <- lm(rating ~ operating_system + RAM + storage + screen_size + battery + price, data=it_ind)
-summary(lin_reg_it_ind)
-
-# fit linear regression model on all Italian customers
-lin_reg_it <- lm(rating ~ operating_system + RAM + storage + screen_size + battery + price, data=df_it)
-summary(lin_reg_it)
-
-### Chinese market
-# load Chinese data
-df_ch <- read.csv("Laptop_Research_Survey_chn.csv")
-df_ch <- data.frame(df_ch)
-head(df_ch)
-
-# convert variables as qualitative
-for (i in c('operating_system',"RAM","price","storage","screen_size","battery")){
-  df_ch[[i]] <- as.factor(df_ch[[i]])
-}
-
-# fit linear regression model on one Chinese customer
-set.seed(25)
-c_ <- unique(df_ch$resp_id)
-id_ <- sample(x=c_, size = 1)
-ch_ind <- df_ch[df_ch$resp_id==id_,]
-lin_reg_ch_ind <- lm(rating ~ operating_system + RAM + storage + screen_size + battery + price, data=ch_ind)
-summary(lin_reg_ch_ind)
-
-# fit linear regression model on all Italian customers
-lin_reg_ch <- lm(rating ~ operating_system + RAM + storage + screen_size + battery + price, data=df_ch)
-summary(lin_reg_ch)
 
 ##########################################
-# step2. consider the data including     #
+# step1. consider the data including     #
 # both the Italian and Chinese market    #
 ##########################################
 
@@ -79,7 +28,7 @@ summary(lin_reg)
 AIC(lin_reg) # 7720.239
 
 #############################################
-# step3. try to compute the part-worths and #
+# step2. try to compute the part-worths and #
 # plot the spine chart of student customers #
 #############################################
 
@@ -177,7 +126,7 @@ spine.chart(conjoint.results)
 dev.off()  # close the graphics output device
 
 ############################################################################
-# step4. multilevel linear model on rating and respondent level (2 levels )#
+# step3. multilevel linear model on rating and respondent level (2 levels )#
 ############################################################################
 
 #### consider the rating as Level 1, respondent as Level 2
@@ -316,7 +265,7 @@ grid()  # people can accept the price 1000Euro, but obvious be negative to price
 
 
 ##########################################################################################
-# step5. multilevel linear model on rating, respondent and nationality level (3 levels ) #
+# step4. multilevel linear model on rating, respondent and nationality level (3 levels ) #
 ##########################################################################################
 
 #### random intercept model
@@ -385,7 +334,7 @@ grid()
 
 
 ##########################################################################################
-# step6. multilevel linear model on rating, respondent and education level (3 levels ) #
+# step5. multilevel linear model on rating, respondent and education level (3 levels ) #
 ##########################################################################################
 
 
