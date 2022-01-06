@@ -65,6 +65,8 @@ summary(lin_reg_ch)
 df <- read.csv("Laptop_Research_Survey.csv")
 df <- data.frame(df)
 head(df)
+str(df)
+summary(df)
 
 # convert the variable to factors 
 for (i in c('operating_system',"RAM","price","storage","screen_size","battery","nationality","Education")){
@@ -74,7 +76,7 @@ for (i in c('operating_system',"RAM","price","storage","screen_size","battery","
 # fit linear regression
 lin_reg <- lm(rating ~ operating_system + RAM + storage + screen_size + battery + price, data=df)
 summary(lin_reg)
-AIC(lin_reg) # 7727.448
+AIC(lin_reg) # 7720.239
 
 #############################################
 # step3. try to compute the part-worths and #
@@ -82,8 +84,6 @@ AIC(lin_reg) # 7727.448
 #############################################
 
 # save key list elements of the fitted model as needed for conjoint measures
-
-options(contrasts=c("contr.sum","contr.poly"))
 
 conjoint.results <-
   lin_reg[c("contrasts","xlevels","coefficients")]
@@ -186,7 +186,7 @@ multilin_RI <- lmer(rating ~ operating_system + RAM + storage + screen_size + ba
 summary(multilin_RI) # a lot of variance in how respondent use rating scale
 vcov(multilin_RI) # compute the covariance matrix
 lme4::VarCorr(multilin_RI) %>% print(comp = c("Variance", "Std.Dev"),digits = 2)
-AIC(multilin_RI)  ## 7471.636
+AIC(multilin_RI)  ## 7451.259
 
 # confidence interval
 tab_model(multilin_RI)
@@ -209,14 +209,14 @@ grid()
 par(mfrow=c(1,1))
 
 # compute the ICC
-ICC=1.456/(1.456+3.497) # 0.2940
-ICC*100 #29.40
+ICC=1.447/(1.447+3.494) # 0.2929
+ICC*100 #29.29
 
 # compute the level-1 ER-squared
 NullModel <- lmer(rating ~ 1 + (1 | resp_id), data = df)
 summary(NullModel)
-R2_1 <- 1-(1.456+3.497)/(1.346+4.448)
-R2_1 # 0.14515
+R2_1 <- 1-(1.447+3.494)/(1.341+4.444)
+R2_1 # 0.1458946
 
 
 # access the normality of residual
@@ -235,11 +235,14 @@ mlmRS <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery 
 
 summary(mlmRS)
 tab_model(mlmRS) 
-AIC(mlmRS)  # 7351.593
+AIC(mlmRS)  # 7344.585
 head(ranef(mlmRS)$resp_id) # check the random effect of each respondent 
 
-### visualization of the distribution of different attributes
+# plot random effects
+dotplot(ranef(mlmRS), cex=0.4) # heterogeneity in operating_system, RAM, battery, price
 
+
+### visualization of the distribution of different attributes
 # visualizing RAM
 RAM8 <- coef(mlmRS)$resp_id$RAM8
 RAM16 <- coef(mlmRS)$resp_id$RAM16
@@ -263,20 +266,18 @@ hist(battery12, xlim=c(-4,4), ylim=c(0,50), main="Battery 12h vs Battery 4h", yl
 grid()
 
 # visualizing price 
+par(mfrow=c(1,2))
 price1000 <- coef(mlmRS)$resp_id$price1000
 price1500 <- coef(mlmRS)$resp_id$price1500
-par(mfrow=c(1,2))
 hist(price1000, xlim=c(-4,4), ylim=c(0,50), main="1000Euro vs 500Euro", ylab="Respondents frequency", 
      xlab="Difference in rating")
 grid()
-hist(price1500, xlim=c(-4,4), ylim=c(0,50), main="1500Euro vs 500Euro", ylab="Respondents frequency", 
+hist(price1500, xlim=c(-2,2), ylim=c(0,50), main="1500Euro vs 500Euro", ylab="Respondents frequency", 
      xlab="Difference in rating")
 grid()
 
-par(mfrow=c(1,1))
 
-# plot random effects
-dotplot(ranef(mlmRS), cex=0.4) # heterogeneity in operating_system, RAM, battery, price
+
 
 # visualizing operating system 
 windows <- coef(mlmRS)$resp_id$operating_systemWindows
@@ -289,6 +290,28 @@ hist(macos, xlim=c(-4,4), ylim=c(0,50), main="MacOS vs Linux", ylab="Respondents
      xlab="Difference in rating")
 grid()
 
+# visualizing storage ### this is a point
+par(mfrow=c(1,2))
+storage512 <- coef(mlmRS)$resp_id$storage512  ### 256 is little more popular than 512GB
+storage1024 <- coef(mlmRS)$resp_id$storage1024
+hist(storage512, xlim=c(-4,4), ylim=c(0,50), main="storage 512GB vs storage 256GB ", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+hist(storage1024, xlim=c(-2,2), ylim=c(0,50), main="storage 1024GB vs storage 256GB ", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+
+# visualizing price ## point
+par(mfrow=c(1,2))
+price1000 <- coef(mlmRS)$resp_id$price1000
+price1500 <- coef(mlmRS)$resp_id$price1500
+hist(price1000, xlim=c(-4,4), ylim=c(0,50), main="price 1000Euro vs price 500Euro", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+
+hist(price1500, xlim=c(-4,4), ylim=c(0,50), main="price 1500Euro vs price 500Euro", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()  # people can accept the price 1000Euro, but obvious be negative to price 1500Euro
 
 
 
@@ -303,27 +326,61 @@ summary(multilin_RI_2)
 vcov(multilin_RI_2)
 
 lme4::VarCorr(multilin_RI_2) %>% print(comp = c("Variance", "Std.Dev"),digits = 3)
-AIC(multilin_RI_2) ## 7411.414
+AIC(multilin_RI_2) ## 7404.505
 
 # compute the ICC
-ICC_2=
+ICC_2 = (1.005+1.514)/(1.005+1.514+3.494)
 ICC_2*100
 
 # compute the level-1 ER-squared
 NullModel_1 <- lmer(rating ~ 1 + (1 | nationality/resp_id), data = df)
 summary(NullModel_1)
-R2_1_1 <- 
-R2_1_1
+R2_1_1 <- 1- (1.005+1.514+3.494)/(0.8993+1.5139+4.4444)
+R2_1_1 # 0.1232
+
+
+# access the normality of residual
+qqnorm(resid(multilin_RI_2))  # sigma^2
+qqline(resid(multilin_RI_2))
+
+# access the normality of random effects of intercept
+qqnorm(ranef(multilin_RI_2)$resp_id[[1]])
+qqline(ranef(multilin_RI_2)$resp_id[[1]])
+
 
 #### random slope model
 mlmRS_2 <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + 
                   (operating_system + RAM + storage + screen_size + battery + price | nationality/resp_id), 
                 data=df, control = lmerControl(check.nobs.vs.nRE = "ignore"))
 summary(mlmRS_2)
-AIC(mlmRS_2) # 7483.336
+AIC(mlmRS_2) # 7477.759
 tab_model(mlmRS_2)
 head(ranef(mlmRS_2)$resp_id) # check the random effect of each respondent 
 
+# plot random effects
+dotplot(ranef(mlmRS_2), cex=0.4)
+
+## histgram # price
+par(mfrow=c(1,2))
+price1000_2 <- coef(mlmRS_2)$resp_id$price1000
+price1500_2 <- coef(mlmRS_2)$resp_id$price1500
+hist(price1000_2, xlim=c(-4,4), ylim=c(0,50), main="1000Euro vs 500Euro", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+hist(price1500_2, xlim=c(-2,2), ylim=c(0,50), main="1500Euro vs 500Euro", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+
+# storage
+par(mfrow=c(1,2))
+storage512_2 <- coef(mlmRS_2)$resp_id$storage512  ### 256 is little more popular than 512GB
+storage1024_2 <- coef(mlmRS_2)$resp_id$storage1024
+hist(storage512_2, xlim=c(-4,4), ylim=c(0,50), main="storage 512GB vs storage 256GB ", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+hist(storage1024_2, xlim=c(-2,2), ylim=c(0,50), main="storage 1024GB vs storage 256GB ", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
 
 
 
@@ -339,17 +396,17 @@ summary(multilin_RI_3)
 vcov(multilin_RI_3)
 
 lme4::VarCorr(multilin_RI_3) %>% print(comp = c("Variance", "Std.Dev"),digits = 3)
-AIC(multilin_RI_3) ## 7411.414
+AIC(multilin_RI_3) ## 7447.435
 
 # compute the ICC
-ICC_3=
-  ICC_3*100
+ICC_3 = (1.3482+0.3177)/(1.3482+0.3177+3.4936)
+ICC_3*100
 
 # compute the level-1 ER-squared
 NullModel_2 <- lmer(rating ~ 1 + (1 | Education/resp_id), data = df)
-summary(NullModel)
-R2_1_2 <- 
-  R2_1_2
+summary(NullModel_2)
+R2_1_2 <- 1-(1.3482+0.3177+3.4936)/(1.2425+0.3177+4.4444)
+R2_1_2 # 0.1407
 
 #### random slope model
 mlmRS_3 <- lmer(rating ~ operating_system + RAM + storage + screen_size + battery + price + 
@@ -360,9 +417,30 @@ AIC(mlmRS_3)
 tab_model(mlmRS_3)
 head(ranef(mlmRS_3)$resp_id) # check the random effect of each respondent 
 
+# plot random effects
+dotplot(ranef(mlmRS_3), cex=0.4)
 
+## histgram # price
+par(mfrow=c(1,2))
+price1000_3 <- coef(mlmRS_3)$resp_id$price1000
+price1500_3 <- coef(mlmRS_3)$resp_id$price1500
+hist(price1000_3, xlim=c(-4,4), ylim=c(0,50), main="1000Euro vs 500Euro", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+hist(price1500_3, xlim=c(-2,2), ylim=c(0,50), main="1500Euro vs 500Euro", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
 
-
+# storage
+par(mfrow=c(1,2))
+storage512_3 <- coef(mlmRS_3)$resp_id$storage512  ### 256 is little more popular than 512GB
+storage1024_3 <- coef(mlmRS_3)$resp_id$storage1024
+hist(storage512_3, xlim=c(-4,4), ylim=c(0,50), main="storage 512GB vs storage 256GB ", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
+hist(storage1024_3, xlim=c(-2,2), ylim=c(0,50), main="storage 1024GB vs storage 256GB ", ylab="Respondents frequency", 
+     xlab="Difference in rating")
+grid()
 
 
 
