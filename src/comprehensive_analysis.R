@@ -11,7 +11,7 @@ source("spine_chart_utility.R")
 ##########################################
 
 # load the data
-df <- read.csv("Laptop_Research_Survey.csv")
+df <- read.csv("../data/Laptop_Research_Survey.csv")
 df <- data.frame(df)
 head(df)
 str(df)
@@ -21,6 +21,8 @@ summary(df)
 for (i in c('operating_system',"RAM","price","storage","screen_size","battery","nationality","Education")){
   df[[i]] <- as.factor(df[[i]])
 }
+
+backup_options <- options()
 
 # fit linear regression
 lin_reg <- lm(rating ~ operating_system + RAM + storage + screen_size + battery + price, data=df)
@@ -32,8 +34,11 @@ AIC(lin_reg) # 7720.239
 # plot the spine chart of student customers #
 #############################################
 
-# save key list elements of the fitted model as needed for conjoint measures
+# set options to obtain sum contrast
+options(contrasts=c("contr.sum","contr.poly"))
+lin_reg <- lm(rating ~ operating_system + RAM + storage + screen_size + battery + price, data=df)
 
+# save key list elements of the fitted model as needed for conjoint measures
 conjoint.results <-
   lin_reg[c("contrasts","xlevels","coefficients")]
 
@@ -128,6 +133,8 @@ dev.off()  # close the graphics output device
 ############################################################################
 # step3. multilevel linear model on rating and respondent level (2 levels )#
 ############################################################################
+
+options(backup_options)
 
 #### consider the rating as Level 1, respondent as Level 2
 #### random intercept model
