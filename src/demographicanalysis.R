@@ -4,7 +4,7 @@ library(ggplot2)
 library(gridExtra)
 
 # load data
-df <- read.csv("Laptop_Research_Survey.csv")
+df <- read.csv("../data/Laptop_Research_Survey.csv")
 df <- df[,c(1,10,11,12,13)]
 df <- unique(df)
 df <- df[-1]
@@ -90,11 +90,39 @@ df$cluster <- factor(df$cluster, labels=c("A", "B", "C", "D", "E"))
 # look at demographics across the clusters/segments
 with(df, table(cluster, Gender))
 
+p_1 <- ggplot(as.data.frame(with(df, prop.table(table(cluster, Gender), margin=1))), aes(x=Gender, y=Freq, fill=Gender)) + 
+  geom_bar(stat="identity") +
+  facet_grid(~ cluster) +
+  labs(x = "Gender", y = "Frequency") +
+  theme(legend.position="none")
+
+
 with(df, table(cluster, Age)) 
+
+p_2 <- ggplot(as.data.frame(with(df, prop.table(table(cluster, Age), margin=1))), aes(x=Age, y=Freq, fill=Age)) + 
+  geom_bar(stat="identity") +
+  facet_grid(~ cluster) +
+  labs(x = "Age", y = "Frequency") +
+  theme(legend.position="none")
 
 with(df, table(cluster, Education))
 
+p_3 <- ggplot(as.data.frame(with(df, prop.table(table(cluster, Education), margin=1))), aes(x=Education, y=Freq, fill=Education)) + 
+  geom_bar(stat="identity") +
+  facet_grid(~ cluster) +
+  labs(x = "Education", y = "Frequency") +
+  theme(legend.position="none") +
+  scale_x_discrete(label=abbreviate)
+
 with(df, table(cluster, Work))
+
+p_4 <- ggplot(as.data.frame(with(df, prop.table(table(cluster, Work), margin=1))), aes(x=Work, y=Freq, fill=Work)) + 
+  geom_bar(stat="identity") +
+  facet_grid(~ cluster) +
+  labs(x = "Work", y = "Frequency") +
+  theme(legend.position="none")
+
+grid.arrange(p_1, p_2, p_4, p_3, ncol=1, nrow=4, top = "Clusters distribution")
 
 
 
