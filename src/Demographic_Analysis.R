@@ -13,7 +13,7 @@ Demogra_data <- read.csv('Laptop_Research_Survey.csv')
 Demogra_data$Age <- factor(Demogra_data$Age, levels = c("18", "18-20", "20-23", "24-26", "27-30", ">30"))
 Demogra_data$Gender <- factor(Demogra_data$Gender, levels = c("male", "female", "prefer not to say"))
 Demogra_data$Education <- factor(Demogra_data$Education)
-Demogra_data$Work. <- factor(Demogra_data$Work.)
+Demogra_data$Work. <- factor(Demogra_data$Work)
 
 summary(Demogra_data)
 
@@ -65,7 +65,7 @@ num_not_say <- nrow(Demogra_data[Demogra_data$Gender=="prefer not to say",])/9
 # the number of participants who do not choose their gender is small, which is not 
 # convincing enough to make a conclusion
 
-# -----------  Relation between Age, RAM and rating  --------------
+# -----------  Relation between Gender, RAM and rating  --------------
 pic <- Demogra_data[,c(2,4,11)]
 pic <- aggregate(pic$rating, by=list(type=pic$Gender, pic$RAM),mean)
 names(pic) <-c ("Gender","RAM", "Average_rating")
@@ -75,7 +75,7 @@ ggplot(data=pic, mapping=aes(x = RAM, y = Average_rating,fill=Gender))+
         geom_bar(stat="identity",position=position_dodge(0.75))
 # almost everyone prefer larger RAM, but there is no big difference between 8GB and 16GB
 
-# -----------  Relation between Age, Screen_size and rating  --------------
+# -----------  Relation between Gender, Screen_size and rating  --------------
 pic <- Demogra_data[,c(2,6,11)]
 pic <- aggregate(pic$rating, by=list(type=pic$Gender, pic$screen_size),mean)
 names(pic) <-c ("Gender","Screen_size", "Average_rating")
@@ -85,7 +85,7 @@ ggplot(data=pic, mapping=aes(x = Screen_size, y = Average_rating,fill=Gender))+
         geom_bar(stat="identity",position=position_dodge(0.75))
 # male students prefer larger screen size, while females prefer smaller ones
 
-# -----------  Relation between Age, battery and rating  --------------
+# -----------  Relation between Gender, battery and rating  --------------
 pic <- Demogra_data[,c(2,7,11)]
 pic <- aggregate(pic$rating, by=list(type=pic$Gender, pic$battery),mean)
 names(pic) <-c ("Gender","battery", "Average_rating")
@@ -96,7 +96,7 @@ ggplot(data=pic, mapping=aes(x = battery, y = Average_rating,fill=Gender))+
 # Battery is not a crucial influencer in decision-making of male, 
 # but female prefer a computer with longer standby time
 
-# -----------  Relation between Age, operating_system and rating  --------------
+# -----------  Relation between Gender, operating_system and rating  --------------
 pic <- Demogra_data[,c(2,3,11)]
 pic <- aggregate(pic$rating, by=list(type=pic$Gender, pic$operating_system),mean)
 names(pic) <-c ("Gender","operating_system", "Average_rating")
@@ -106,7 +106,7 @@ ggplot(data=pic, mapping=aes(x = operating_system, y = Average_rating,fill=Gende
         geom_bar(stat="identity",position=position_dodge(0.75))
 # most users prefer MacOS and Windows than Linux
 
-# -----------  Relation between Age, price and rating  --------------
+# -----------  Relation between Gender, price and rating  --------------
 pic <- Demogra_data[,c(2,8,11)]
 pic <- aggregate(pic$rating, by=list(type=pic$Gender, pic$price),mean)
 names(pic) <-c ("Gender","price", "Average_rating")
@@ -163,7 +163,7 @@ pic$battery <- factor(pic$battery)
 ggplot(data=pic, mapping=aes(x = battery, y = Average_rating,fill=Education))+
         geom_bar(stat="identity",position=position_dodge(0.75))
 # People at work prefer longer standby battery,
-# Others do not have special prefrence
+# Others do not have special prefrerence
 
 # -----------  Relation between Education, operating_system and rating  --------------
 pic <- Demogra_data[,c(2,3,12)]
@@ -187,13 +187,12 @@ ggplot(data=pic, mapping=aes(x = price, y = Average_rating,fill=Education))+
 # in general, people prefer cheaper price, but from PhD students' point of view,
 # higher price is not always comes the second 
 
-
 # -----------------------------------------------
 # Focus on Work., attributes of computer and rating
 # -----------------------------------------------
-num_work_full <- nrow(Demogra_data[Demogra_data$Work.=="Yes, full-time",])/9
-num_work_part <- nrow(Demogra_data[Demogra_data$Work.=="Yes, part-time",])/9
-num_work_no <- nrow(Demogra_data[Demogra_data$Work.=="No",])/9
+num_work_full <- nrow(Demogra_data[Demogra_data$Work=="Yes, full-time",])/9
+num_work_part <- nrow(Demogra_data[Demogra_data$Work=="Yes, part-time",])/9
+num_work_no <- nrow(Demogra_data[Demogra_data$Work=="No",])/9
 
 # num_work_full=22, num_work_part = 164, No = 27
 # Again, we see that the numbers of PhD students and people who are working and 
@@ -202,7 +201,7 @@ num_work_no <- nrow(Demogra_data[Demogra_data$Work.=="No",])/9
 
 # -----------  Relation between Work., RAM and rating  --------------
 pic <- Demogra_data[,c(2,4,13)]
-pic <- aggregate(pic$rating, by=list(type=pic$Work., pic$RAM),mean)
+pic <- aggregate(pic$rating, by=list(type=pic$Work, pic$RAM),mean)
 names(pic) <-c ("Work.","RAM", "Average_rating")
 pic$RAM <- factor(pic$RAM)
 
@@ -213,7 +212,7 @@ ggplot(data=pic, mapping=aes(x = RAM, y = Average_rating,fill=Work.))+
 
 # -----------  Relation between Education, Screen_size and rating  --------------
 pic <- Demogra_data[,c(2,6,13)]
-pic <- aggregate(pic$rating, by=list(type=pic$Work., pic$screen_size),mean)
+pic <- aggregate(pic$rating, by=list(type=pic$Work, pic$screen_size),mean)
 names(pic) <-c ("Work.","Screen_size", "Average_rating")
 pic$Screen_size <- factor(pic$Screen_size)
 
@@ -223,7 +222,7 @@ ggplot(data=pic, mapping=aes(x = Screen_size, y = Average_rating,fill=Work.))+
 
 # -----------  Relation between Work., battery and rating  --------------
 pic <- Demogra_data[,c(2,7,13)]
-pic <- aggregate(pic$rating, by=list(type=pic$Work., pic$battery),mean)
+pic <- aggregate(pic$rating, by=list(type=pic$Work, pic$battery),mean)
 names(pic) <-c ("Work.","battery", "Average_rating")
 pic$battery <- factor(pic$battery)
 
@@ -234,7 +233,7 @@ ggplot(data=pic, mapping=aes(x = battery, y = Average_rating,fill=Work.))+
 
 # -----------  Relation between Work., operating_system and rating  --------------
 pic <- Demogra_data[,c(2,3,13)]
-pic <- aggregate(pic$rating, by=list(type=pic$Work., pic$operating_system),mean)
+pic <- aggregate(pic$rating, by=list(type=pic$Work, pic$operating_system),mean)
 names(pic) <-c ("Work.","operating_system", "Average_rating")
 pic$operating_system <- factor(pic$operating_system)
 
@@ -245,7 +244,7 @@ ggplot(data=pic, mapping=aes(x = operating_system, y = Average_rating,fill=Work.
 
 # -----------  Relation between Work., price and rating  --------------
 pic <- Demogra_data[,c(2,8,13)]
-pic <- aggregate(pic$rating, by=list(type=pic$Work., pic$price),mean)
+pic <- aggregate(pic$rating, by=list(type=pic$Work, pic$price),mean)
 names(pic) <-c ("Work.","price", "Average_rating")
 pic$price <- factor(pic$price)
 
@@ -316,3 +315,5 @@ pic$price <- factor(pic$price)
 ggplot(data=pic, mapping=aes(x = price, y = Average_rating,fill=Age))+
         geom_bar(stat="identity",position=position_dodge(0.75))
 # students prefer chpear computers except those under 18
+# but the number of people under 18 is not convincing enough
+
